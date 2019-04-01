@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ajax example</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+
+$('#go').click(function(event) {
+	/* Act on the event */
+	var checkedvalue = $("input[name='selectby']:checked").val();
+	var s="";
+	
+	if 	(checkedvalue==0)
+	{
+		var c=$('#city').val();
+		s="q="+c;
+	
+	}
+	else if (checkedvalue==1) {
+		var lat=$('#lat').val();
+		var lon=$('#lon').val();
+		s="lat="+lat+"&lon="+lon;
+	
+	}
+	
+	$.ajax({
+			url: 'http://api.openweathermap.org/data/2.5/weather?'+s+'&appid=1e4fd732a968803f77a9d96d0e223569',
+			type:"GET",
+			dataType:"jsonp",
+			success : 
+			function(obj){
+				
+			//	var obj=JSON.stringify(data);
+			//	obj=JSON.parse(obj);
+				$('#res').html(
+
+						"<img src='"+ "http://openweathermap.org/img/w/"+obj.weather[0].icon+".png" +"' width='500' height='500' >"+
+						"The City geo location, longitude:"+obj.coord.lon+"<br>"+
+						"The City geo location, latitude:"+obj.coord.lat+"<br>"+
+						" Weather condition id:"+obj.weather[0].id+"<br>"+
+						" Group of weather parameters (Rain, Snow, Extreme etc.):"+obj.weather[0].main+
+						"<br>"+
+						"Weather condition within the group description:"+obj.weather[0].description+"<br>"+
+						"Temperature:"+obj.main.temp+"<br>"+
+						"Atmospheric pressure (on the sea level, if there is no sea_level or grnd_level data), hPa:"+obj.main.pressure+"<br>"+
+						" Minimum temperature at the moment:"+obj.main.temp_min+"<br>"+
+						" Maximum temperature at the moment:"+obj.main.temp_max+"<br>"+
+						"Humidity, %:"+obj.main.humidity+"<br>"+
+						" Wind speed. Unit Default: meter/sec:"
+						+obj.wind.speed+"<br>"+
+						" Wind direction, degrees (meteorological)"+obj.wind.deg+"<br>"+
+						"cloudiness %:"+obj.clouds.all+"<br>"+
+						"city name:"+obj.name+"<br>"+"city id:"+obj.id
+						+"<br><br>"+
+						"DONE..."
+
+					)
+			},
+			
+
+		error: function(xhr){
+     		 alert("An error occured: " + xhr.status + " " + xhr.statusText+":entered city might not be a city check and reenter the city");
+
+     		}
+
+		}).done(function(d){
+		
+			console.log(`this is ${d.id}`);
+		});
+});
+		
+	});
+
+</script>
+<script type="text/javascript">
+	
+</script>
+
+<body>
+
+	<form action="#">
+		<button><a href="cityfinder.html" target="_blank">OPEN CITY DESC FINDER</a></button>
+		<p>search-by:</p>
+		city:<input type="radio"  name='selectby' value="0" onclick ="document.getElementById('ll').style.display='none';document.getElementById('dcity').style.display='inline-block';">
+		lat and lon:<input type="radio" name='selectby' value="1" onclick ="document.getElementById('dcity').style.display='none';document.getElementById('ll').style.display='inline-block';"><br>
+		<div id="dcity">city:<input type="text" id="city" style="display:inline-block;" ></div>
+		<div id="ll" style="display: block;">
+		lat:<input type="text" id="lat"><br>
+		lon:<input type="text" id="lon">
+	</div>
+		<button id="go">Go!</button>
+	</form>
+
+	<p id="res"></p>
+
+</body>
+</html>
